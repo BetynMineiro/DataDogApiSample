@@ -11,14 +11,14 @@ RUN TRACER_VERSION=$(curl -s \https://api.github.com/repos/DataDog/dd-trace-dotn
     && curl -Lo /tmp/datadog-dotnet-apm.deb https://github.com/DataDog/dd-trace-dotnet/releases/download/v${TRACER_VERSION}/datadog-dotnet-apm_${TRACER_VERSION}_amd64.deb
 
 WORKDIR /src
-COPY ["DatadogContainerExample/DatadogContainerExample.csproj", "DatadogContainerExample/"]
-RUN dotnet restore "DatadogContainerExample/DatadogContainerExample.csproj"
+COPY ["DataDogApiSample/DataDogApiSample.csproj", "DataDogApiSample/"]
+RUN dotnet restore "DataDogApiSample/DataDogApiSample.csproj"
 COPY . .
-WORKDIR "/src/DatadogContainerExample"
-RUN dotnet build "DatadogContainerExample.csproj" -c Release -o /app/build
+WORKDIR "/src/DataDogApiSample"
+RUN dotnet build "DataDogApiSample.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "DatadogContainerExample.csproj" -c Release -o /app/publish
+RUN dotnet publish "DataDogApiSample.csproj" -c Release -o /app/publish
 
 FROM base AS final
 
@@ -39,4 +39,4 @@ ENV DD_INTEGRATIONS=/opt/datadog/integrations.json
 
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "DatadogContainerExample.dll"]
+ENTRYPOINT ["dotnet", "DataDogApiSample.dll"]
